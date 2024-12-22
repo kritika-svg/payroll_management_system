@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payroll Management System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-family: 'Dancing Script', cursive;
+        }
+
+        .menu-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            min-width: 200px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 10px 15px;
+            text-decoration: none;
+            display: block;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .employee-card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 30px; /* Increased gap between image and text */
+}
+
+.employee-card img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-right: 20px; /* Ensures consistent spacing between image and text */
+}
+
+.employee-card div {
+    flex-grow: 1; /* Ensures the text block adjusts dynamically */
+}
+
+
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown button:hover {
+            background-color: #0056b3;
+        }
+
+        .content {
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-group input[type="file"] {
+            padding: 0;
+        }
+
+        .employee-card {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .employee-card img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+        footer {
+        text-align: center;
+        padding: 20px;
+        background-color: #000000;
+        color: white;
+        margin-top: 30px;
+        animation: fadeInUp 1s ease;
+    }
+
+    footer {
+        text-align: center;
+        padding: 20px;
+        background-color: #000000;
+        color: white;
+        margin-top: 30px;
+        animation: fadeInUp 1s ease;
+    }
+
+    footer a {
+        color: white;
+        font-size: 24px;
+        text-decoration: none;
+        transition: color 0.3s, transform 0.3s;
+    }
+
+    footer a:hover {
+        color: #007bff;
+        transform: scale(1.2);
+    }
+
+    footer p {
+        margin-top: 10px;
+        font-size: 16px;
+        font-family: Arial, sans-serif;
+    }
+
+    footer span {
+        transition: color 0.3s ease;
+    }
+
+    footer span:hover {
+        color: #0056b3;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+</head>
+<body>
+    <div class="menu-container">
+        <div class="dropdown">
+            <button>Menu</button>
+            <div class="dropdown-content">
+                <a href="#" onclick="showSection('addEmployee')">Add Employee</a>
+                <a href="#" onclick="showSection('viewCards')">View Identity Cards</a>
+                <a href="#" onclick="showSection('viewCount')">View Total Employees</a>
+                <a href="#" onclick="showSection('viewSalaryByName')">View Salary By Name</a>
+                <a href="#" onclick="showSection('viewAllSalaries')">All Employees' Salaries</a>
+                <a href="#" onclick="showSection('markAttendance')">Mark Attendance</a>
+                <a href="#" onclick="showSection('viewAttendance')">View Attendance</a>
+
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Payroll Management System</h1>
+
+        <div id="login" class="content active">
+            <h2>Login</h2>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password">
+            </div>
+            <button onclick="login()">Login</button>
+        </div>
+            <!-- Mark Attendance Section -->
+    <div id="markAttendance" class="content">
+        <h2>Mark Attendance</h2>
+        <div class="form-group">
+            <label for="attendanceDate">Select Date:</label>
+            <input type="date" id="attendanceDate">
+        </div>
+        <div id="employeeAttendanceList"></div>
+        <button onclick="saveAttendance()">Save Attendance</button>
+    </div>
+
+    <!-- View Attendance Section -->
+    <div id="viewAttendance" class="content">
+        <h2>View Attendance</h2>
+        <div class="form-group">
+            <label for="attendanceViewDate">Select Date:</label>
+            <input type="date" id="attendanceViewDate">
+        </div>
+        <button onclick="viewAttendance()">View Attendance</button>
+        <div id="attendanceRecords"></div>
+        <canvas id="attendanceChart" style="max-width: 600px; margin: 20px auto;"></canvas>
+    </div>
+    
+
+
+        <div id="addEmployee" class="content">
+            <h2>Add Employee</h2>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name">
+            </div>
+            <div class="form-group">
+                <label for="designation">Designation:</label>
+                <input type="text" id="designation">
+            </div>
+            <div class="form-group">
+                <label for="department">Department:</label>
+                <input type="text" id="department">
+            </div>
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <input type="number" id="age">
+            </div>
+            <div class="form-group">
+                <label for="salary">Salary:</label>
+                <input type="number" id="salary">
+            </div>
+            <div class="form-group">
+                <label for="houseRentAllowance">House Rent Allowance:</label>
+                <input type="number" id="houseRentAllowance">
+            </div>
+            <div class="form-group">
+                <label for="dailyAllowance">Daily Allowance:</label>
+                <input type="number" id="dailyAllowance">
+            </div>
+            <div class="form-group">
+                <label for="providentFund">Provident Fund:</label>
+                <input type="number" id="providentFund">
+            </div>
+            <div class="form-group">
+                <label for="contact">Contact:</label>
+                <input type="text" id="contact">
+            </div>
+            <div class="form-group">
+                <label for="profileImage">Upload Profile Image (Square):</label>
+                <input type="file" id="profileImage" accept="image/*">
+            </div>
+            <button onclick="addEmployee()">Add Employee</button>
+        </div>
+
+        <div id="viewCards" class="content">
+            <h2>View Identity Cards</h2>
+            <div id="identityCards"></div>
+        </div>
+
+        <div id="viewCount" class="content">
+            <h2>Total Employees</h2>
+            <p id="totalEmployees"></p>
+        </div>
+
+        <div id="viewSalaryByName" class="content">
+            <h2>View Salary by Name</h2>
+            <div class="form-group">
+                <label for="searchName">Enter Name:</label>
+                <input type="text" id="searchName">
+            </div>
+            <button onclick="viewSalaryByName()">Search</button>
+            <p id="grossSalary"></p>
+        </div>
+
+        <div id="viewAllSalaries" class="content">
+            <h2>All Employees' Salaries</h2>
+            <div id="allSalaries"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div style="display: flex; justify-content: center; gap: 20px; align-items: center;">
+            <a href="https://github.com/kritika-svg" target="_blank">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/kritika-rawat-kr" target="_blank">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="https://www.instagram.com/kritikarawat._" target="_blank">
+                <i class="fab fa-instagram"></i>
+            </a>
+        </div>
+        <p>
+            Designed by <span style="color: #007bff; font-weight: bold;"></span> |
+            <span 
+            style="cursor: pointer; color: #ffffff; font-family: 'Dancing Script', cursive; font-size: 25px;" 
+            onclick="alert('Thanks for visiting! Have a great day!')">
+            kritika rawat
+        </span>
+        </p>
+    </footer>
+
+    <script>
+        let isLoggedIn = false;
+        const employees = [];
+
+        function showSection(sectionId) {
+            if (!isLoggedIn && sectionId !== 'login') {
+                alert('Please login first!');
+                return;
+            }
+
+            document.querySelectorAll('.content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            document.getElementById(sectionId).classList.add('active');
+
+            if (sectionId === 'viewCards') viewIdentityCards();
+            if (sectionId === 'viewCount') displayTotalEmployees();
+            if (sectionId === 'viewAllSalaries') displayAllSalaries();
+        }
+
+        function login() {
+        isLoggedIn = true;
+        alert('Login successful!');
+        showSection('addEmployee');
+        }
+
+        function logout() {
+        isLoggedIn = false;
+        alert('Logged out successfully.');
+        showSection('login');
+        }
+
+                function addEmployee() {
+            const name = document.getElementById('name').value;
+            const designation = document.getElementById('designation').value;
+            const department = document.getElementById('department').value;
+            const age = parseInt(document.getElementById('age').value);
+            const salary = parseFloat(document.getElementById('salary').value);
+            const houseRentAllowance = parseFloat(document.getElementById('houseRentAllowance').value);
+            const dailyAllowance = parseFloat(document.getElementById('dailyAllowance').value);
+            const providentFund = parseFloat(document.getElementById('providentFund').value);
+            const contact = document.getElementById('contact').value;
+            const profileImage = document.getElementById('profileImage').files[0];
+
+            if (!name || !designation || !department || !contact || isNaN(age) || isNaN(salary) || isNaN(houseRentAllowance) || isNaN(dailyAllowance) || isNaN(providentFund) || !profileImage) {
+                alert('Please fill in all fields with valid values.');
+                return;
+            }
+
+            if (age < 18 || age > 65 || salary < 0 || houseRentAllowance < 0 || dailyAllowance < 0 || providentFund < 0) {
+                alert('Invalid input values. Please check the age, salary, or allowances.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                employees.push({ 
+                    name, designation, department, age, salary, houseRentAllowance, dailyAllowance, providentFund, contact, 
+                    profileImage: event.target.result 
+                });
+                alert('Employee added successfully!');
+                clearEmployeeForm();
+            };
+            reader.readAsDataURL(profileImage);
+        }
+
+        function clearEmployeeForm() {
+            document.getElementById('name').value = '';
+            document.getElementById('designation').value = '';
+            document.getElementById('department').value = '';
+            document.getElementById('age').value = '';
+            document.getElementById('salary').value = '';
+            document.getElementById('houseRentAllowance').value = '';
+            document.getElementById('dailyAllowance').value = '';
+            document.getElementById('providentFund').value = '';
+            document.getElementById('contact').value = '';
+            document.getElementById('profileImage').value = '';
+        }
+
+        function viewIdentityCards() {
+            const cardsContainer = document.getElementById('identityCards');
+            cardsContainer.innerHTML = '';
+
+            employees.forEach(emp => {
+                const card = document.createElement('div');
+                card.classList.add('employee-card');
+                card.innerHTML = `
+                    <img src="${emp.profileImage}" alt="${emp.name}">
+                    <div>
+                        <p><strong>Name:</strong> ${emp.name}</p>
+                        <p><strong>Designation:</strong> ${emp.designation}</p>
+                        <p><strong>Department:</strong> ${emp.department}</p>
+                        <p><strong>Age:</strong> ${emp.age}</p>
+                        <p><strong>Contact:</strong> ${emp.contact}</p>
+                    </div>
+                `;
+                cardsContainer.appendChild(card);
+            });
+        }
+
+        function displayTotalEmployees() {
+            document.getElementById('totalEmployees').innerText = `Total number of employees: ${employees.length}`;
+        }
+
+        function viewSalaryByName() {
+            const searchName = document.getElementById('searchName').value;
+            const emp = employees.find(e => e.name === searchName);
+
+            if (emp) {
+                const grossSalary = emp.salary + emp.houseRentAllowance + emp.dailyAllowance + emp.providentFund;
+                document.getElementById('grossSalary').innerText = `Gross Salary of ${searchName}: ${grossSalary}`;
+            } else {
+                document.getElementById('grossSalary').innerText = `Employee with name ${searchName} not found.`;
+            }
+        }
+
+        function displayAllSalaries() {
+            const salariesContainer = document.getElementById('allSalaries');
+            salariesContainer.innerHTML = '';
+
+            employees.forEach(emp => {
+                const salaryCard = document.createElement('div');
+                salaryCard.classList.add('employee-card');
+                salaryCard.innerHTML = `
+                    <p><strong>Name:</strong> ${emp.name}</p>
+                    <p><strong>Designation:</strong> ${emp.designation}</p>
+                    <p><strong>Department:</strong> ${emp.department}</p>
+                    <p><strong>Salary:</strong> ${emp.salary}</p>
+                `;
+                salariesContainer.appendChild(salaryCard);
+            });
+        }
+// Mark Attendance Function
+function markAttendance() {
+            const date = document.getElementById('attendanceDate').value;
+            const attendanceList = document.getElementById('employeeAttendanceList');
+            attendanceList.innerHTML = '';
+
+            if (!date) {
+                alert('Please select a date.');
+                return;
+            }
+
+            employees.forEach(emp => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label>${emp.name} (${emp.designation}):</label>
+                    <label><input type="radio" name="attendance_${emp.name}" value="P" /> P</label>
+                    <label><input type="radio" name="attendance_${emp.name}" value="A" /> A</label>
+                    <label><input type="radio" name="attendance_${emp.name}" value="G" /> G</label>
+                `;
+                attendanceList.appendChild(div);
+            });
+        }
+
+        // Save Attendance Function
+        function saveAttendance() {
+            const date = document.getElementById('attendanceDate').value;
+
+            if (!date) {
+                alert('Please select a date.');
+                return;
+            }
+
+            employees.forEach(emp => {
+                const radios = document.getElementsByName(`attendance_${emp.name}`);
+                let status = null;
+
+                radios.forEach(radio => {
+                    if (radio.checked) {
+                        status = radio.value;
+                    }
+                });
+
+                if (!emp.attendance) emp.attendance = {};
+                emp.attendance[date] = status || 'A'; // Default to Absent if no option is selected
+            });
+
+            alert('Attendance saved successfully!');
+            document.getElementById('attendanceDate').value = '';
+            document.getElementById('employeeAttendanceList').innerHTML = '';
+        }
+
+        function viewAttendance() {
+    const date = document.getElementById('attendanceViewDate').value;
+    const records = document.getElementById('attendanceRecords');
+    const attendanceChart = document.getElementById('attendanceChart');
+    records.innerHTML = '';
+
+    if (!date) {
+        alert('Please select a date.');
+        return;
+    }
+
+    const attendanceCounts = { P: 0, A: 0, G: 0 }; // Present, Absent, On Leave (G)
+    const attendanceDetails = employees.map(emp => {
+        const status = emp.attendance && emp.attendance[date] ? emp.attendance[date] : 'A';
+        attendanceCounts[status]++;
+        return {
+            name: emp.name,
+            designation: emp.designation,
+            status: status,
+        };
+    });
+
+    if (Object.values(attendanceCounts).every(count => count === 0)) {
+        records.innerHTML = `<p>No attendance data found for ${date}.</p>`;
+        attendanceChart.style.display = 'none';
+        return;
+    }
+
+    attendanceChart.style.display = 'block';
+
+    // Generate the pie chart
+    const ctx = attendanceChart.getContext('2d');
+    if (window.attendancePieChart) {
+        window.attendancePieChart.destroy(); // Destroy any previous chart instance
+    }
+
+    window.attendancePieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Present', 'Absent', 'On Leave'],
+            datasets: [{
+                label: 'Attendance Status',
+                data: [attendanceCounts.P, attendanceCounts.A, attendanceCounts.G],
+                backgroundColor: ['#4CAF50', '#FF5252', '#FFC107'], // Green, Red, Yellow
+            }],
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            return `${tooltipItem.label}: ${tooltipItem.raw}`;
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    // Display attendance records in text format
+    attendanceDetails.forEach(record => {
+        const div = document.createElement('div');
+        div.classList.add('employee-card');
+        div.innerHTML = `
+            <p><strong>Name:</strong> ${record.name}</p>
+            <p><strong>Designation:</strong> ${record.designation}</p>
+            <p><strong>Status:</strong> ${record.status}</p>
+        `;
+        records.appendChild(div);
+    });
+}
+
+   
+        // Automatically populate attendance list when date is selected
+        document.getElementById('attendanceDate').addEventListener('change', markAttendance);
+    </script>
+</body>
+</html>
